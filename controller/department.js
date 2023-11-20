@@ -19,4 +19,4 @@ export const createDepartment = async (req, res) => {
             error: error.message,
         })
     }
-}
+};
