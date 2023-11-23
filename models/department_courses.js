@@ -20,7 +20,8 @@ DepartmentCourse.init({
     references: {
       model: 'departments',
       key: 'id',
-    },
+    }
+  }
 }, {
   sequelize,
   tableName: 'department_courses'
