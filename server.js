@@ -5,12 +5,14 @@ import { logger } from "./utils/logger.js";
 import { sequelize } from "./database/sequelize.js";
 import { userRoutes } from "./routes/students.js";
 import { departmentRoutes } from "./routes/department.js";
+import { courseRoutes } from './routes/courses.js';
 
 const app = express();
 
 app.use(express.json());
 app.use("/", userRoutes);
 app.use("/", departmentRoutes);
+app.use("/", courseRoutes);
 
 try {
   await sequelize.authenticate();

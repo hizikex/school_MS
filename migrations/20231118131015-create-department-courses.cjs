@@ -1,18 +1,27 @@
 'use strict';
-/** @type {import('sequelize-cli').Migration} */
+
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable('department_courses', {
-      department_id: {
-        type: Sequelize.INTEGER,
-        primaryKey: true,
-        allowNull: false
-      },
       course_id: {
-        type: Sequelize.INTEGER,
         primaryKey: true,
-        allowNull: false
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'courses',
+          key: 'id',
+        },
       },
+      department_id: {
+        primaryKey: true,
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'departments',
+          key: 'id',
+        },
+      },
+
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

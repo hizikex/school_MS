@@ -12,12 +12,12 @@ export const registerStudent = async (req, res) => {
       where: { id: req.params.departmentId },
     });
     if (!departmentExist) {
-      res.send("Department does not exist");
+      return res.send("Department does not exist");
     }
 
     const userExist = await Student.findOne({ where: { email: email } });
     if (userExist) {
-      res.send("Student with email already exist");
+      return res.send("Student with email already exist");
     }
 
     const newStudent = await Student.create({
@@ -29,12 +29,12 @@ export const registerStudent = async (req, res) => {
       gender: gender,
     });
 
-    res.status(200).json({
+    return res.status(200).json({
       message: "Student registered successful",
       data: newStudent,
     });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       error: error.message,
     });
   }
@@ -44,14 +44,14 @@ export const processUserLogin = async (req, res) => {
   const { email, password } = req.body;
   const userExist = await Student.findOne({ where: { email: email } });
   if (!userExist) {
-    res.status(404).json({
+    return res.status(404).json({
       message: "Email or password incorrect",
     });
   }
 
   const isPassword = bcrypt.compare(password, userExist.password);
   if (!isPassword) {
-    res.status(404).json({
+    return res.status(404).json({
       message: "Password incorrect",
     });
   }

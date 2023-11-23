@@ -3,12 +3,14 @@ import { Model, DataTypes } from 'sequelize';
 
 export class DepartmentCourse extends Model {}
 
-DepartmentCourses.init({
-  department_id: {
+DepartmentCourse.init({
+  course_id: {
+    primaryKey: true,
     type: DataTypes.INTEGER,
     allowNull: false,
   },
-  course_id: {
+  department_id: {
+    primaryKey: true,
     type: DataTypes.INTEGER,
     allowNull: false,
   }
