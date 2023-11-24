@@ -1,5 +1,6 @@
 import { sequelize } from '../database/sequelize.js';
 import { Model, DataTypes } from 'sequelize';
+import { Department } from './departments.js';
 
 export class Student extends Model {}
 
@@ -38,4 +39,9 @@ Student.init({
   sequelize,
   tableName: 'students',
   modelName: 'Student'
+});
+
+Student.belongsTo(Department, {
+  foreignKey: 'id',
+  as: 'department'
 });

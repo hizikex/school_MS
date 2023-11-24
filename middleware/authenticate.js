@@ -3,7 +3,6 @@ import { Student } from "../models/students.js";
 
 export const authenticate = async (req, res, next) => {
     const token = req.header('Authorization');
-    console.log("normaltokem", token)
     if (!token) {
         return res.json(403).json({
             message: "Authorization denied. No token provided"

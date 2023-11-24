@@ -15,6 +15,8 @@ export const createCourse = async (req, res) => {
         )
     );
 
+    console.log(departmentsExist);
+    
     if (departments.some((department) => !department)) {
         return res.status(404).json({
             message: "Department with name does not exist"

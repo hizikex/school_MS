@@ -108,3 +108,31 @@ export const getAllStudents = async (req, res) => {
     data: allStudents,
   });
 };
+
+export const getStudentProfile = async (req, res) => {
+  try {
+    const student = await Student.findOne({ where: {id: req.params.id},
+      include: [
+        {
+          model: Department,
+          as: 'department',
+          attributes: ['name']
+        }
+      ] });
+  
+    if (!student) {
+      return res.status(404).json({
+        message: "Student not found",
+      });
+    }
+  
+    res.status(200).json({
+      message: `${student.fullname} profile`,
+      data: student
+    })
+  } catch (error) {
+        return res.status(500).json({
+      message: error.message
+    })
+  }
+}
