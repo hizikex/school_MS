@@ -21,3 +21,31 @@ export const createDepartment = async (req, res) => {
     }
 };
 
+export const updateDepartment = async (req, res) => {
+    try {
+        const department = await Department.findOne({ where: {id: req.params.id} });
+
+        if(!department) {
+            return res.status(404).json({
+                message: "Department not found",
+            })
+        }
+
+        const updatedDepartment = await Department.update({ name: req.body.name }, {where: { id: department.id } });
+
+        if(updatedDepartment == 0) {
+            return res.status(403).json({
+                message: "Department not updated",
+            })
+        }
+    
+        res.status(200).json({
+            message: "Department updated successfully",
+            data: await Department.findOne({where: { id: req.params.id } })
+        })
+    } catch (error) {
+        return res.status(200).json({
+            message: error.message
+        })
+    }
+};

@@ -47,7 +47,7 @@ export const registerStudent = async (req, res) => {
 export const processUserLogin = async (req, res) => {
   const { email, password } = req.body;
   const userExist = await Student.findOne({ where: { email: email } });
-  
+
   if (!userExist) {
     return res.status(403).json({
       message: "User not found",
@@ -175,8 +175,6 @@ export const changePassword = async ( req, res ) => {
 
     updatedStudent.password = hashPassword;
     const StudentUpdated = await updatedStudent.save();
-
-    console.log(StudentUpdated);
 
     if ( !StudentUpdated ) {
       return res.status(403).json({
