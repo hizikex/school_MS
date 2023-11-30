@@ -11,6 +11,7 @@ export const registerStudent = async (req, res) => {
     const departmentExist = await Department.findOne({
       where: { id: req.params.departmentId },
     });
+
     if (!departmentExist) {
       return res.send("Department does not exist");
     }
@@ -64,7 +65,8 @@ export const processUserLogin = async (req, res) => {
   const generateToken = jwt.sign(
     {
       id: userExist.id,
-      email: userExist.email
+      email: userExist.email,
+      department_id: userExist.department_id,
     },
     process.env.ACCESS_TOKEN,
     {
@@ -95,17 +97,17 @@ export const getAllStudents = async (req, res) => {
     const limit = 5;
     const page = req.query.page ? req.query.page : 1;
     const offset = (page - 1) * limit;
-  
+
     const student = res.locals.student;
-  
+
     if (!student) {
       return res.status(401).json({
         message: "Student is not logged in",
       });
     }
-  
+
     const students = await Student.findAll({ limit, offset });
-  
+
     return res.status(200).json({
       message: "All students",
       data: students ? students.map((students) => students) : [],
@@ -120,25 +122,27 @@ export const getAllStudents = async (req, res) => {
 
 export const getStudentProfile = async (req, res) => {
   try {
-    const student = await Student.findOne({ where: {id: req.params.id},
+    const student = await Student.findOne({
+      where: { id: req.params.id },
       include: [
         {
           model: Department,
-          as: 'department',
-          attributes: ['name']
-        }
-      ] });
-  
+          as: "department",
+          attributes: ["id", "name"],
+        },
+      ],
+    });
+
     if (!student) {
       return res.status(404).json({
         message: "Student not found",
       });
     }
-  
+
     res.status(200).json({
       message: `${student.fullname} profile`,
-      data: student
-    })
+      data: student,
+    });
   } catch (error) {
     return res.status(400).json({
       success: false,
@@ -147,26 +151,32 @@ export const getStudentProfile = async (req, res) => {
   }
 };
 
-export const changePassword = async ( req, res ) => {
+export const changePassword = async (req, res) => {
   try {
     const student = res.locals.student;
     const { currentPassword, newPassword } = req.body;
-    const updatedStudent = await Student.findOne({ where: {id: req.params.id} });
+    const updatedStudent = await Student.findOne({
+      where: { id: req.params.id },
+    });
 
     if (!student) {
       return res.status(403).json({
-        message: 'Student not found',
+        message: "Student not found",
       });
     } else if (student.id !== updatedStudent.id) {
       return res.status(403).json({
-        message: "Cannot update another student's  password",
+        message: "Cannot update another student's password",
       });
     }
 
-    const passwordMatch = await bcrypt.compare(currentPassword, student.password);
+    const passwordMatch = await bcrypt.compare(
+      currentPassword,
+      student.password
+    );
+
     if (!passwordMatch) {
       return res.status(403).json({
-        message: 'Incorrect password',
+        message: "Incorrect password",
       });
     }
 
@@ -174,9 +184,9 @@ export const changePassword = async ( req, res ) => {
     const hashPassword = bcrypt.hashSync(newPassword, saltPassword);
 
     updatedStudent.password = hashPassword;
-    const StudentUpdated = await updatedStudent.save();
+    const StudentUpdate = await updatedStudent.save();
 
-    if ( !StudentUpdated ) {
+    if (!StudentUpdate) {
       return res.status(403).json({
         message: "Student not updated",
       });
@@ -184,7 +194,7 @@ export const changePassword = async ( req, res ) => {
 
     return res.status(200).json({
       message: "Student updated successfully",
-      data: StudentUpdated
+      data: StudentUpdate,
     });
   } catch (error) {
     return res.status(400).json({
@@ -192,4 +202,38 @@ export const changePassword = async ( req, res ) => {
       message: error.message,
     });
   }
+};
+
+export const updateStudentDepartment = async (req, res) => {
+  const student = res.locals.student;
+  const { department_id } = req.body;
+  const department = await Department.findOne({ where: { id: department_id } });
+
+  if (!department) {
+    return res.status(404).json({
+      message: "Department not found",
+    });
+  } else if (student.department_id === department_id) {
+    return res.status(404).json({
+      message: "Cannot update id with same value",
+    });
+  }
+
+  const updatedStudentDepartment = await Student.update(
+    { department_id: department_id },
+    { where: { id: student.id } }
+  );
+  
+  console.log(updatedStudentDepartment);
+if (updatedStudentDepartment == 0) {
+    return res.status(403).json({
+      message: "Student department not updated",
+    });
+  }
+
+  const updatedStudent = await Student.findOne({ where: { id: department_id } });
+  res.status(200).json({
+    message: "Department updated successfully",
+    data: updatedStudent
+  });
 };

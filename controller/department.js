@@ -33,6 +33,7 @@ export const updateDepartment = async (req, res) => {
 
         const updatedDepartment = await Department.update({ name: req.body.name }, {where: { id: department.id } });
 
+        console.log(updatedDepartment);
         if(updatedDepartment == 0) {
             return res.status(403).json({
                 message: "Department not updated",
